@@ -3,8 +3,11 @@
 
 #include "Menu.h"
 
-void UMenu::MenuSetup()
+void UMenu::MenuSetup(int32 NumberOfPublicConnections, FString TypeOfMatch)
 {
+	NumPublicConnections = NumberOfPublicConnections;
+	MatchType = TypeOfMatch;
+
 	// 将菜单添加到视口中
 	AddToViewport();
 
@@ -32,6 +35,7 @@ void UMenu::MenuSetup()
 	}
 }
 
+
 bool UMenu::Initialize()
 {
 	if (!Super::Initialize())
@@ -51,6 +55,12 @@ bool UMenu::Initialize()
 	return true;
 }
 
+void UMenu::OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld)
+{
+	MenuTearDown();
+	Super::OnLevelRemovedFromWorld(InLevel, InWorld);
+}
+
 void UMenu::BtnHostClicked()
 {
 	if (GEngine)
@@ -60,7 +70,12 @@ void UMenu::BtnHostClicked()
 
 	if (MultiplayerSessionSubsystem != nullptr)
 	{
-		MultiplayerSessionSubsystem->CreateSession(4, "FreeForAll");
+		MultiplayerSessionSubsystem->CreateSession(NumPublicConnections, MatchType);
+		UWorld* World = GetWorld();
+		if (World != nullptr)
+		{
+			World->ServerTravel("/Game/TopDown/Maps/Lobby?listen");
+		}
 	}
 }
 
@@ -69,5 +84,21 @@ void UMenu::BtnJoinClicked()
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow, FString(TEXT("BtnJoin Clicked")));
+	}
+}
+
+void UMenu::MenuTearDown()
+{
+	RemoveFromParent();
+	const UWorld* World = GetWorld();
+	if (World != nullptr)
+	{
+		APlayerController* PlayerController = World->GetFirstPlayerController();
+		if (PlayerController != nullptr)
+		{
+			const FInputModeGameOnly InputModData;
+			PlayerController->SetInputMode(InputModData);
+			// PlayerController->SetShowMouseCursor(false);
+		}
 	}
 }
