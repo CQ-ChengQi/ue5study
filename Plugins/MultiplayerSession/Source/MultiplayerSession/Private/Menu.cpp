@@ -33,6 +33,11 @@ void UMenu::MenuSetup(int32 NumberOfPublicConnections, FString TypeOfMatch)
 	{
 		MultiplayerSessionSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionSubsystem>();
 	}
+
+	if (MultiplayerSessionSubsystem != nullptr)
+	{
+		MultiplayerSessionSubsystem->MultiplayerOnCreateSessionComplete.AddDynamic(this, &ThisClass::OnCreateSession);
+	}
 }
 
 
@@ -61,21 +66,35 @@ void UMenu::OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld)
 	Super::OnLevelRemovedFromWorld(InLevel, InWorld);
 }
 
-void UMenu::BtnHostClicked()
+void UMenu::OnCreateSession(bool bWasSuccessful)
 {
-	if (GEngine)
+	if (bWasSuccessful)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow, FString(TEXT("BtnHost Clicked")));
-	}
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString(TEXT("Session 创建成功")));
+		}
 
-	if (MultiplayerSessionSubsystem != nullptr)
-	{
-		MultiplayerSessionSubsystem->CreateSession(NumPublicConnections, MatchType);
 		UWorld* World = GetWorld();
 		if (World != nullptr)
 		{
 			World->ServerTravel("/Game/TopDown/Maps/Lobby?listen");
 		}
+	}
+	else
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString(TEXT("Session 创建失败")));
+		}
+	}
+}
+
+void UMenu::BtnHostClicked()
+{
+	if (MultiplayerSessionSubsystem != nullptr)
+	{
+		MultiplayerSessionSubsystem->CreateSession(NumPublicConnections, MatchType);
 	}
 }
 

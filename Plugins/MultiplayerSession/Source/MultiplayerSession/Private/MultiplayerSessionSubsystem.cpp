@@ -22,11 +22,14 @@ UMultiplayerSessionSubsystem::UMultiplayerSessionSubsystem()
 
 void UMultiplayerSessionSubsystem::CreateSession(int32 NumPublicConnections, FString MathType)
 {
+
+	
+	
 	if (!SessionInterface.IsValid())
 	{
 		return;
 	}
-
+	
 	const FNamedOnlineSession* ExistingSession = SessionInterface->GetNamedSession(NAME_GameSession);
 	if (ExistingSession != nullptr)
 	{
@@ -40,12 +43,19 @@ void UMultiplayerSessionSubsystem::CreateSession(int32 NumPublicConnections, FSt
 	LastSessionSettings->bAllowJoinInProgress = true;
 	LastSessionSettings->bAllowJoinViaPresence = true;
 	LastSessionSettings->bUsesPresence = true;
+	// LastSessionSettings->bUseLobbiesIfAvailable = true;
+	
 	LastSessionSettings->Set(FName("MachType"), MathType, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
+	
+	
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
 	if (!SessionInterface->CreateSession(*LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession, *LastSessionSettings))
 	{
 		SessionInterface->ClearOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegateHandle);
+
+		// 广播自己委托事件
+		MultiplayerOnCreateSessionComplete.Broadcast(false);
 	}
 }
 
@@ -67,6 +77,12 @@ void UMultiplayerSessionSubsystem::StartSession()
 
 void UMultiplayerSessionSubsystem::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful)
 {
+	if (SessionInterface != nullptr)
+	{
+		SessionInterface->ClearOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegateHandle);
+	}
+
+	MultiplayerOnCreateSessionComplete.Broadcast(bWasSuccessful);
 }
 
 void UMultiplayerSessionSubsystem::OnFindSessionComplete(bool bWasSuccessful)

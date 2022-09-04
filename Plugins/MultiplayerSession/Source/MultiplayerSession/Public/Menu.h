@@ -22,6 +22,9 @@ public:
 protected:
 	virtual bool Initialize() override;
 	virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld) override;
+
+	UFUNCTION()
+	void OnCreateSession(bool bWasSuccessful);
 private:
 	UPROPERTY(meta=(BindWidget))
 	UButton* BtnHost;
@@ -36,7 +39,7 @@ private:
 	void BtnJoinClicked();
 
 	void MenuTearDown();
-
+	
 	UMultiplayerSessionSubsystem* MultiplayerSessionSubsystem;
 
 	int32 NumPublicConnections{4};

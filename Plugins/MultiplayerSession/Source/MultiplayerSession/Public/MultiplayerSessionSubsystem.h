@@ -7,8 +7,12 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "MultiplayerSessionSubsystem.generated.h"
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnCreateSessionComplete, bool, bWasSuccessful);
+
+
 /**
- * 
+ * 多人在线会话
  */
 UCLASS()
 class MULTIPLAYERSESSION_API UMultiplayerSessionSubsystem : public UGameInstanceSubsystem
@@ -23,6 +27,9 @@ public:
 	void JoinSession(const FOnlineSessionSearchResult& SearchResult);
 	void DestroySession();
 	void StartSession();
+
+	/** 菜单回调函数 */
+	FMultiplayerOnCreateSessionComplete MultiplayerOnCreateSessionComplete;
 protected:
 	/** Session 回调函数 */
 	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);

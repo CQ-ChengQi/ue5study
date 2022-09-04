@@ -54,15 +54,15 @@ AStudyCharacter::AStudyCharacter()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
 	// OnlineSubsystem Steam
-	if (const IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get())
-	{
-		OnlineSessionInterface = OnlineSubsystem->GetSessionInterface();
-
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Found subsystem %s"), *OnlineSubsystem->GetSubsystemName().ToString()));
-		}
-	}
+	// if (const IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get())
+	// {
+	// 	OnlineSessionInterface = OnlineSubsystem->GetSessionInterface();
+	//
+	// 	if (GEngine)
+	// 	{
+	// 		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Found subsystem %s"), *OnlineSubsystem->GetSubsystemName().ToString()));
+	// 	}
+	// }
 }
 
 void AStudyCharacter::Tick(float DeltaSeconds)
