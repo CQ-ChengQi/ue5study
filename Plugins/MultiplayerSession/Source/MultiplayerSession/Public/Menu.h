@@ -25,6 +25,14 @@ protected:
 
 	UFUNCTION()
 	void OnCreateSession(bool bWasSuccessful);
+	
+	void OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResult, bool bWasSuccessful);
+	void OnJoinSession(EOnJoinSessionCompleteResult::Type Result);
+
+	UFUNCTION()
+	void OnDestroySession(bool bWasSuccessful);
+	UFUNCTION()
+	void OnStartSession(bool bWasSuccessful);
 private:
 	UPROPERTY(meta=(BindWidget))
 	UButton* BtnHost;
@@ -39,7 +47,7 @@ private:
 	void BtnJoinClicked();
 
 	void MenuTearDown();
-	
+
 	UMultiplayerSessionSubsystem* MultiplayerSessionSubsystem;
 
 	int32 NumPublicConnections{4};
