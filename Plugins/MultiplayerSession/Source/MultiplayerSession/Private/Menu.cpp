@@ -120,9 +120,9 @@ void UMenu::BtnHostClicked()
 
 void UMenu::BtnJoinClicked()
 {
-	if (GEngine)
+	if (MultiplayerSessionSubsystem != nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow, FString(TEXT("BtnJoin Clicked")));
+		MultiplayerSessionSubsystem->FindSession(10000);
 	}
 }
 

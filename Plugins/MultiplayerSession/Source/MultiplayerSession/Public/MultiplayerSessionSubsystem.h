@@ -51,6 +51,7 @@ protected:
 private:
 	IOnlineSessionPtr SessionInterface;
 	TSharedPtr<FOnlineSessionSettings> LastSessionSettings;
+	TSharedPtr<FOnlineSessionSearch> LastSessionSearch;
 
 	/** Session 委托 */
 	FOnCreateSessionCompleteDelegate CreateSessionCompleteDelegate;
