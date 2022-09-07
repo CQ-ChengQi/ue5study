@@ -3,6 +3,8 @@
 
 #include "Menu.h"
 
+#include "OnlineSessionSettings.h"
+
 void UMenu::MenuSetup(int32 NumberOfPublicConnections, FString TypeOfMatch)
 {
 	NumPublicConnections = NumberOfPublicConnections;
@@ -96,10 +98,33 @@ void UMenu::OnCreateSession(bool bWasSuccessful)
 
 void UMenu::OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResult, bool bWasSuccessful)
 {
+	if (MultiplayerSessionSubsystem == nullptr)
+	{
+		return;
+	}
+
+	for (auto Result : SessionResult)
+	{
+		FString SettingsValue;
+		Result.Session.SessionSettings.Get(FName("MatchType"), SettingsValue);
+		if (SettingsValue == MatchType)
+		{
+			MultiplayerSessionSubsystem->JoinSession(Result);
+			return;
+		}
+	}
 }
 
-void UMenu::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
+void UMenu::OnJoinSession(EOnJoinSessionCompleteResult::Type Result, FString Address)
 {
+	if (MultiplayerSessionSubsystem != nullptr)
+	{
+		APlayerController* PlayerController = GetGameInstance()->GetFirstLocalPlayerController();
+		if (PlayerController != nullptr)
+		{
+			PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
+		}
+	}
 }
 
 void UMenu::OnDestroySession(bool bWasSuccessful)
